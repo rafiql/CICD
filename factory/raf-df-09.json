@@ -1,0 +1,9 @@
+{
+	"name": "raf-df-09",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "cd947d26-6c66-4618-b71e-195642aa952f",
+		"tenantId": "44fd3b89-4c48-4824-89e8-bcb02a2374e7"
+	}
+}

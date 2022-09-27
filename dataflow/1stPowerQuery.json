@@ -1,0 +1,28 @@
+{
+	"name": "1stPowerQuery",
+	"properties": {
+		"type": "WranglingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "sourceEmp",
+					"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> sourceEmp",
+					"dataset": {
+						"referenceName": "sourceEmp",
+						"type": "DatasetReference"
+					}
+				},
+				{
+					"name": "sourceDept",
+					"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> sourceDept",
+					"dataset": {
+						"referenceName": "sourceDept",
+						"type": "DatasetReference"
+					}
+				}
+			],
+			"script": "section Section1;\r\nshared sourceEmp = let AdfDoc = AzureStorage.DataLakeContents(\"https://rafdatalake.dfs.core.windows.net/raffile/Input/emp.csv\"),Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]), PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]) in  PromotedHeaders;\r\nshared sourceDept = let AdfDoc = AzureStorage.DataLakeContents(\"https://rafdatalake.dfs.core.windows.net/raffile/Input/dept.csv\"),Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]), PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]) in  PromotedHeaders;\r\nshared UserQuery = let Source = #\"sourceEmp\",\r\n  #\"Merged queries\" = Table.NestedJoin(Source, {\"DeptID\"}, sourceDept, {\"id\"}, \"sourceDept\", JoinKind.Inner),\r\n  #\"Expanded sourceDept\" = Table.ExpandTableColumn(#\"Merged queries\", \"sourceDept\", {\"Deptname\"}, {\"Deptname\"}),\r\n  #\"Removed columns\" = Table.RemoveColumns(#\"Expanded sourceDept\", {\"DeptID\"}) in #\"Removed columns\";\r\n",
+			"documentLocale": "en-us"
+		}
+	}
+}
